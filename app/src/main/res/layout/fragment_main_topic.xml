@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/task"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="4">
+
+        <ListView
+            android:id="@+id/listView_main_pic_task"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:footerDividersEnabled="false">
+
+        </ListView>
+    </LinearLayout>
+    <Button
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_add_task"
+        android:textColor="@color/white"
+        android:background="@drawable/yello_black"
+        android:text="添加一个新话题"/>
+</LinearLayout>

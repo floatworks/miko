@@ -1,0 +1,6 @@
+<root>
+    <item name='android.support.v4.app.NotificationCompat'>
+        <annotation name='java.lang.annotation.Deprecated' />
+        <annotation name='org.jetbrains.annotations.NotNull' />
+    </item>
+</root>

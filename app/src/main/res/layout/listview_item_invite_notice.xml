@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="#888888">
+    <TextView
+        android:id="@+id/tv_list_item_invite_notice_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="5"
+        android:text="您收到来自哈哈哈的邀请"
+        android:textColor="@color/white"/>
+    <Button
+        android:id="@+id/btn_list_item_invite_notice_accept"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="接受"/>
+
+
+</LinearLayout>

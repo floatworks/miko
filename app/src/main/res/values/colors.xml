@@ -1,0 +1,14 @@
+<resources>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="blue_btn">#6699CC</color>
+    <color name="white">#FFFFFF</color>
+    <color name="logo">#99CCFF</color>
+    <color name="lightblue900">#01579b</color>
+    <color name="lightblue800">#0277bd</color>
+    <color name="lightblue50">#e1f5fe</color>
+    <color name="lightblueA700">#0091ea</color>
+    <color name="lightblue300">#4fc3f7</color>
+    <color name="yello300">#FFD800</color>
+    <color name="black">#000000</color>
+</resources>
