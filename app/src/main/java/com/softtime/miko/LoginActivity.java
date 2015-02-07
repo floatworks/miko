@@ -55,7 +55,7 @@ public class LoginActivity extends Activity {
 
                             @Override
                             public void onFailure(int i, String s) {
-                                Toast.makeText(LoginActivity.this,"noO!~"+s,Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this,"有错误出现~："+s,Toast.LENGTH_LONG).show();
                             }
                         });
 

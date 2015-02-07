@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Sharetime.iml" filepath="$PROJECT_DIR$/Sharetime.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/miko.iml" filepath="$PROJECT_DIR$/miko.iml" />
     </modules>
   </component>
 </project>

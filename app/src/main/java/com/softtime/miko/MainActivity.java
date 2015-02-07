@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.softtime.miko.BmobData.User;
 
+import com.softtime.miko.Fragment.FragmentMainMatched;
 import com.softtime.miko.Fragment.FragmentMainTopic;
 import com.softtime.miko.Fragment.FragmentMainMe;
 import com.softtime.miko.Fragment.FragmentMainFriend;
@@ -38,11 +39,12 @@ public class MainActivity extends Activity {
     ImageView ivBottombarChat;
     ImageView ivBottombarMe;
 
-    //4个Fragment
+    //5个Fragment
     Fragment fragmentPicbox;
     Fragment fragmentTopic;
     Fragment fragmentChat;
     Fragment fragmentMe;
+    Fragment fragmentMatched;
     //FragmentManager
     FragmentManager fragmentManager;
     //获取当前登录用户（用的是Bmob的云服务）
@@ -58,7 +60,8 @@ public class MainActivity extends Activity {
         BmobInstallation.getCurrentInstallation(this).save();
         // 启动推送服务
         BmobPush.startWork(this, "3c18f2577233b3d021465b2885790e29");
-        init();
+        init();//初始化控件
+
         setTabSelection(1);
 
     }
@@ -71,11 +74,12 @@ public class MainActivity extends Activity {
      */
 
     private void init(){
-        //初始化四个页面
-        fragmentPicbox =new FragmentMainFriend();
-        fragmentTopic = new FragmentMainTopic();
-        fragmentChat = new FragmentMainChat();
-        fragmentMe = new FragmentMainMe();
+        //初始化5个页面
+            fragmentTopic = new FragmentMainTopic();
+            fragmentChat = new FragmentMainChat();
+            fragmentMe = new FragmentMainMe();
+            fragmentMatched = new FragmentMainMatched();
+            fragmentPicbox = new FragmentMainFriend();
 
 
 
@@ -132,9 +136,16 @@ public class MainActivity extends Activity {
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
         switch (index){
-            case 1:
+            case 1://这个特殊一点，要获得用户是否已经匹配来动态展示
+                if(gettedUserInfo.getOnDating()==0){
                 ivBottombarPicbox.setBackgroundColor(getResources().getColor(R.color.yello300));
                 transaction.replace(R.id.mainContent,fragmentPicbox);
+                }else
+                    {
+                    ivBottombarPicbox.setBackgroundColor(getResources().getColor(R.color.yello300));
+                    transaction.replace(R.id.mainContent,fragmentMatched);
+
+                     }
                 break;
             case 2:
                 ivBottombarTopic.setBackgroundColor(getResources().getColor(R.color.yello300));
