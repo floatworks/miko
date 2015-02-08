@@ -10,6 +10,15 @@ public class match extends BmobObject {
     public String uid1;
     public String uid2;
     public BmobDate endAt;
+    int isDead;
+
+    public int getIsDead() {
+        return isDead;
+    }
+
+    public void setIsDead(int isDead) {
+        this.isDead = isDead;
+    }
 
     public String getUid1() {
         return uid1;

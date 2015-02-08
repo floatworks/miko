@@ -6,51 +6,77 @@
 
     tools:context="com.softtime.miko.TaskDetail">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/textView_task_detail_title"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="title" />
-
-        <TextView
-            android:id="@+id/textView_task_detail_desc"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="desc" />
+        android:layout_height="250dp">
 
         <ImageView
-            android:id="@+id/imageView_preview_pic"
+            android:id="@+id/iv_task_detail_background"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
+            android:layout_height="fill_parent"
+            android:src="@color/yello300"
+            android:scaleType="centerCrop"/>
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="200人参与"
+            android:textColor="@color/white"
+            android:textSize="15sp"
+            android:gravity="right"
+            android:padding="12dp"/>
 
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView_task_detail_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:background="@drawable/tag_text_bg_small_left"
+                android:gravity="left"
+                android:maxLines="1"
+                android:text="任务标题"
+
+                android:textColor="@color/white" />
+
+            <TextView
+                android:id="@+id/textView_task_detail_desc"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+
+                android:padding="12dp"
+                android:text="任务描述任务描述任务描述任务描述任务描述任务描述任务描述任务描述任务描述任务描述任务描述任务描述任务描述任务描述任务描述"
+                android:textColor="@color/white" />
+        </LinearLayout>
+    </RelativeLayout>
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:background="@color/yello300">
 
-        <Button
-            android:id="@+id/btn_task_detail_take_pic"
-            android:layout_width="fill_parent"
+        <ImageView
+            android:id="@+id/iv_task_detail_take_pic"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
+            android:src="@drawable/orca_attach_camera_pressed"
+            android:background="@drawable/yello_black"/>
 
-            android:text="拍一张照片" />
-
-        <Button
-            android:id="@+id/task_detail_select_pic"
-            android:layout_width="fill_parent"
+        <ImageView
+            android:id="@+id/iv_task_detail_select_pic"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="从相册里选" />
+            android:src="@drawable/orca_attach_photo_pressed" />
     </LinearLayout>
 </RelativeLayout>

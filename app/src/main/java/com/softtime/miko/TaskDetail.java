@@ -14,6 +14,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,9 +27,9 @@ import java.io.IOException;
 public class TaskDetail extends ActionBarActivity {
     TextView textViewdetailTitle;
     TextView textViewdetailDesc;
-    Button btnTakePic ;//拍照按钮
-    Button btnSelectPic;//选一张照片按钮
-    ImageView iv ;//图片预览处
+    ImageView ivTakePic ;//拍照按钮
+    ImageView ivSelectPic;//选一张照片按钮
+    ImageView ivTaskBg ;//总任务的背景图
     private File currentImageFile = null;//照片暂存File
     private static final int REQUEST_CODE_TAKE_PICTURE = 1;//动作代码，拍照动作
     private  static final int CROP = 2;//裁剪代码动作
@@ -31,45 +37,73 @@ public class TaskDetail extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
         //找到各种组件
-        btnTakePic = (Button) findViewById(R.id.btn_task_detail_take_pic);
+        ivTakePic = (ImageView) findViewById(R.id.iv_task_detail_take_pic);
         textViewdetailTitle = (TextView) findViewById(R.id.textView_task_detail_title);
         textViewdetailDesc = (TextView) findViewById(R.id.textView_task_detail_desc);
-        iv = (ImageView) findViewById(R.id.imageView_preview_pic);
+        ivTaskBg = (ImageView) findViewById(R.id.iv_task_detail_background);
         //获取刚刚传过来的Intnet
         Intent comeIntent = getIntent();
         String taskTitle = comeIntent.getStringExtra("title");//获取传来的任务名称
         String taskDesc = comeIntent.getStringExtra("desc");//获取传来的任务介绍
+        String taskBg = comeIntent.getStringExtra("background");
         textViewdetailTitle.setText(taskTitle);
         textViewdetailDesc.setText(taskDesc);//让这两个TextView显示
-        //拍照按钮的单击事件
-        btnTakePic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                File dir = new File(Environment.getExternalStorageDirectory(), "pictures/softtime");//存储路径
-                //路径不存在的话则建立
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
-                currentImageFile = new File(dir, System.currentTimeMillis()+".jpg");//路径+名称 = 存储文件具体位置
-                //文件不存在的话则新建
-                if (!currentImageFile.exists()) {
-                    try {
-                        currentImageFile.createNewFile();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+        //设置任务的背景图片显示
+        ImageLoaderConfiguration ilConfinguration = ImageLoaderConfiguration.createDefault(this);//创建默认配置文件
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();//设置配置选项
+        ImageLoader.getInstance().init(ilConfinguration);//绑定配置文件
+        ImageLoader.getInstance().loadImage(taskBg, options, new ImageLoadingListener() {
+                    @Override
+                    public void onLoadingStarted(String s, View view) {
+
                     }
-                }
-                //以上只是新建了一个文件
-                //准备打开相机
-                Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));//把文件转换成Uri格式然后放到Extra里，相机应用会提取这个的，拍完就保存到这里
-                startActivityForResult(i, REQUEST_CODE_TAKE_PICTURE);//开始执行动作码
-            }
+
+                    @Override
+                    public void onLoadingFailed(String s, View view, FailReason failReason) {
+
+                    }
+
+                    @Override
+                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                        ivTaskBg.setImageBitmap(bitmap);
+                    }
+
+                    @Override
+                    public void onLoadingCancelled(String s, View view) {
+
+                    }
+                });
+
+                //拍照按钮的单击事件
+                ivTakePic.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        File dir = new File(Environment.getExternalStorageDirectory(), "pictures/softtime");//存储路径
+                        //路径不存在的话则建立
+                        if (!dir.exists()) {
+                            dir.mkdirs();
+                        }
+                        currentImageFile = new File(dir, System.currentTimeMillis() + ".jpg");//路径+名称 = 存储文件具体位置
+                        //文件不存在的话则新建
+                        if (!currentImageFile.exists()) {
+                            try {
+                                currentImageFile.createNewFile();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        //以上只是新建了一个文件
+                        //准备打开相机
+                        Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        i.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));//把文件转换成Uri格式然后放到Extra里，相机应用会提取这个的，拍完就保存到这里
+                        startActivityForResult(i, REQUEST_CODE_TAKE_PICTURE);//开始执行动作码
+                    }
 
 
-
-
-        });
+                });
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -13,9 +13,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.bmob.BmobProFile;
 import com.softtime.miko.Adapter.TaskAdapter;
 import com.softtime.miko.AddNewTopic;
 import com.softtime.miko.BmobData.task;
+import com.softtime.miko.Config;
 import com.softtime.miko.R;
 import com.softtime.miko.TaskDetail;
 
@@ -46,6 +48,7 @@ public class FragmentMainTopic extends Fragment {
         activity = getActivity();
         listView = (ListView) getActivity().findViewById(R.id.listView_main_pic_task);//获得ListView
         BmobQuery<task> taskBmobQuery = new BmobQuery<task>();//准备查询task表
+        taskBmobQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);
         taskBmobQuery.findObjects(getActivity(),new FindListener<task>() {
             @Override
             public void onSuccess(List<task> tasks) {
@@ -67,8 +70,11 @@ public class FragmentMainTopic extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Toast.makeText(activity,"this is"+position,Toast.LENGTH_SHORT).show();//调试用，显示这是第几个任务
                 Intent intentToTaskDetail = new Intent(activity,TaskDetail.class);
+                //把背景图直接算出来
+                String backgroundImgUrl = BmobProFile.getInstance(getActivity()).signURL(mtasks.get(position).getBackgroundFilename(), mtasks.get(position).getBackgroundUrl(), Config.accessKey,0,null);
                 intentToTaskDetail.putExtra("title",mtasks.get(position).getTaskname());
                 intentToTaskDetail.putExtra("desc",mtasks.get(position).getDesc());
+                intentToTaskDetail.putExtra("background",backgroundImgUrl);
                 startActivity(intentToTaskDetail);
             }
         });

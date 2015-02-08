@@ -12,13 +12,13 @@ import com.softtime.miko.BmobData.User;
 import com.softtime.miko.InviteFriend;
 import com.softtime.miko.R;
 
-
+/**
+ * 这个fragment是，如果没有匹配到就显示这个
+ */
 public class FragmentMainFriend extends Fragment {
 
     User loginedUser;
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-
         return inflater.inflate(R.layout.fragment_main_picbox, container, false);
     }
 

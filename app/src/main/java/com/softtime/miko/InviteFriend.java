@@ -50,7 +50,7 @@ public class InviteFriend extends ActionBarActivity {
                             BmobQuery<BmobInstallation> query  = new BmobQuery<BmobInstallation>();
                             query.addWhereEqualTo("installationId",users.get(0).getInstallationId());
                             pushManager.setQuery(query);
-                            pushManager.pushMessage("你收到一条新的约会邀请");
+                            pushManager.pushMessage("你收到一条新的邀请");
                             //然后把邀请信息储存到inviteNotice表里
                             inviteNotice inviteNotice = new inviteNotice();
                             inviteNotice.setState(0);
@@ -60,6 +60,7 @@ public class InviteFriend extends ActionBarActivity {
                                 @Override
                                 public void onSuccess() {
                                     Toast.makeText(InviteFriend.this,"信息已经发送",Toast.LENGTH_LONG).show();
+                                    finish();
                                 }
 
                                 @Override

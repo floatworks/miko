@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="55dp" android:orientation="horizontal"
+    android:background="@color/yello300">
+    <ImageView
+        android:layout_width="55dp"
+        android:layout_height="fill_parent"
+        android:src="@drawable/logo"
+        android:scaleType="centerCrop"
+        android:background="@drawable/yello_black"/>
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:id="@+id/tv_titlebar"/>
+    <ImageView
+        android:layout_width="55dp"
+        android:layout_height="fill_parent"
+        android:src="@drawable/orca_emoji_more_back_normal"
+        android:scaleType="centerCrop"
+        android:background="@drawable/yello_black"/>
+
+</LinearLayout>

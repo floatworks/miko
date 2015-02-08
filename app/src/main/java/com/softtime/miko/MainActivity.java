@@ -18,17 +18,22 @@ import android.widget.Toast;
 
 import com.softtime.miko.BmobData.User;
 
+import com.softtime.miko.BmobData.match;
 import com.softtime.miko.Fragment.FragmentMainMatched;
 import com.softtime.miko.Fragment.FragmentMainTopic;
 import com.softtime.miko.Fragment.FragmentMainMe;
 import com.softtime.miko.Fragment.FragmentMainFriend;
 import com.softtime.miko.Fragment.FragmentMainChat;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.bmob.push.BmobPush;
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobInstallation;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.GetListener;
 
 public class MainActivity extends Activity {
@@ -51,6 +56,7 @@ public class MainActivity extends Activity {
     //获取当前登录用户（用的是Bmob的云服务）
     User gettedUserInfo;
     int isMatched;//查看是否已经匹配了
+    match nowMatch ; //现在正在匹配中的match
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,32 +71,58 @@ public class MainActivity extends Activity {
         BmobPush.startWork(this, "3c18f2577233b3d021465b2885790e29");
         init();//初始化控件
         System.out.println(gettedUserInfo.getObjectId());
-        //下面这段代码是因为Bmob里面有Bug,总是无法获得getOnDating的值，所以要手动查一下
-        BmobQuery<User> query = new BmobQuery<User>();
-        query.getObject(this,gettedUserInfo.getObjectId(),new GetListener<User>() {
+        /**
+         *  现在我想通过查找match表来确定用户是否已经匹配成功
+         *  我应该根据用户email和isDead来查出这个用户还没有结束的match
+         *  如果能查到，那么就说明已经在匹配中了
+         */
+        //先查到from或者to里面含有登录用户的所有项
+        BmobQuery<match> matchBmobQueryEq1 = new BmobQuery<match>();
+        matchBmobQueryEq1.addWhereEqualTo("uid1",gettedUserInfo.getEmail());//获得登录用户发起的匹配
+        BmobQuery<match> matchBmobQueryEq2 = new BmobQuery<match>();
+        matchBmobQueryEq2.addWhereEqualTo("uid2",gettedUserInfo.getEmail());//获得登录用户收到的匹配
+        System.out.println(gettedUserInfo.getEmail()+"email");
+        //将这两个条件封装成一个List 这个list里面装的是两个条件
+        List<BmobQuery<match>> queries = new ArrayList<BmobQuery<match>>();
+        queries.add(matchBmobQueryEq1);
+        queries.add(matchBmobQueryEq2);
+        BmobQuery<match> preQuery = new BmobQuery<match>();
+        preQuery.or(queries);//将这两个条件设置成了or查询
+        preQuery.findObjects(this,new FindListener<match>() {
             @Override
-            public void onSuccess(User user) {
-                System.out.println(user.getOnDating()+"usergetondating");
-                isMatched = user.getOnDating();
+            public void onSuccess(List<match> matches) {
+                System.out.println("ismatchhahahahaah"+matches.size());
+                if(matches.size()==0){
+                    isMatched = 0;
+                    nowMatch =null;
+                }else {
+                    isMatched = 1;
+                    nowMatch = matches.get(0);
+
+                }
                 switch (isMatched){
                     case 0:
-                        System.out.println("ismatch"+isMatched);
-                        setTabSelection(1);
+                        setTabSelection(1);//如果没有匹配就显示没匹配的首页
                         break;
                     case 1:
                         setTabSelection(5);
-                        break;
+                        break;//如果匹配了就显示已经匹配的首页
                 }
+
             }
 
             @Override
-            public void onFailure(int i, String s) {
-                System.out.println(s);
+            public void onError(int i, String s) {
+                Toast.makeText(MainActivity.this,s,Toast.LENGTH_SHORT).show();
             }
         });
-
-
-
+        //在这里加入一下判断，看看匹配是不是已经过期了，如果已经过期了就删除这个match，然后把这个match移动到一个备份表里
+        switch (isMatched){
+            case 0:
+                break;
+            case 1:
+                //在这里写检测时间的代码
+        }
     }
 
 
@@ -120,28 +152,15 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 ivBottombarPicbox.setBackgroundColor(getResources().getColor(R.color.yello300));
                 //看看是否已经匹配
-                BmobQuery<User> query = new BmobQuery<User>();
-                query.getObject(MainActivity.this,gettedUserInfo.getObjectId(),new GetListener<User>() {
-                    @Override
-                    public void onSuccess(User user) {
-                        System.out.println(user.getOnDating()+"usergetondating");
-                        isMatched = user.getOnDating();
-                        switch (isMatched){
-                            case 0:
-                                System.out.println("ismatch"+isMatched);
-                                setTabSelection(1);
-                                break;
-                            case 1:
-                                setTabSelection(5);
-                                break;
-                        }
-                    }
+                switch (isMatched){
+                    case 0:
 
-                    @Override
-                    public void onFailure(int i, String s) {
-                        System.out.println(s);
-                    }
-                });
+                        setTabSelection(1);//如果没有匹配就显示没匹配的首页
+                        break;
+                    case 1:
+                        setTabSelection(5);
+                        break;//如果匹配了就显示已经匹配的首页
+                }
 
             }
         });
