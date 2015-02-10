@@ -11,6 +11,15 @@ public class match extends BmobObject {
     public String uid2;
     public BmobDate endAt;
     int isDead;
+    BmobDate createAt;
+
+    public BmobDate getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(BmobDate createAt) {
+        this.createAt = createAt;
+    }
 
     public int getIsDead() {
         return isDead;

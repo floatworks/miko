@@ -48,7 +48,6 @@ public class FragmentMainTopic extends Fragment {
         activity = getActivity();
         listView = (ListView) getActivity().findViewById(R.id.listView_main_pic_task);//获得ListView
         BmobQuery<task> taskBmobQuery = new BmobQuery<task>();//准备查询task表
-        taskBmobQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);
         taskBmobQuery.findObjects(getActivity(),new FindListener<task>() {
             @Override
             public void onSuccess(List<task> tasks) {

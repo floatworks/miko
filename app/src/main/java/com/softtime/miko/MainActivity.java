@@ -25,7 +25,9 @@ import com.softtime.miko.Fragment.FragmentMainMe;
 import com.softtime.miko.Fragment.FragmentMainFriend;
 import com.softtime.miko.Fragment.FragmentMainChat;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import cn.bmob.push.BmobPush;
@@ -70,7 +72,6 @@ public class MainActivity extends Activity {
         // 启动推送服务
         BmobPush.startWork(this, "3c18f2577233b3d021465b2885790e29");
         init();//初始化控件
-        System.out.println(gettedUserInfo.getObjectId());
         /**
          *  现在我想通过查找match表来确定用户是否已经匹配成功
          *  我应该根据用户email和isDead来查出这个用户还没有结束的match
@@ -80,8 +81,7 @@ public class MainActivity extends Activity {
         BmobQuery<match> matchBmobQueryEq1 = new BmobQuery<match>();
         matchBmobQueryEq1.addWhereEqualTo("uid1",gettedUserInfo.getEmail());//获得登录用户发起的匹配
         BmobQuery<match> matchBmobQueryEq2 = new BmobQuery<match>();
-        matchBmobQueryEq2.addWhereEqualTo("uid2",gettedUserInfo.getEmail());//获得登录用户收到的匹配
-        System.out.println(gettedUserInfo.getEmail()+"email");
+        matchBmobQueryEq2.addWhereEqualTo("uid2", gettedUserInfo.getEmail());//获得登录用户收到的匹配
         //将这两个条件封装成一个List 这个list里面装的是两个条件
         List<BmobQuery<match>> queries = new ArrayList<BmobQuery<match>>();
         queries.add(matchBmobQueryEq1);
@@ -91,7 +91,6 @@ public class MainActivity extends Activity {
         preQuery.findObjects(this,new FindListener<match>() {
             @Override
             public void onSuccess(List<match> matches) {
-                System.out.println("ismatchhahahahaah"+matches.size());
                 if(matches.size()==0){
                     isMatched = 0;
                     nowMatch =null;
@@ -106,6 +105,7 @@ public class MainActivity extends Activity {
                         break;
                     case 1:
                         setTabSelection(5);
+                        SimpleDateFormat endDateFormat = new SimpleDateFormat("yyyy-MM-dd ");
                         break;//如果匹配了就显示已经匹配的首页
                 }
 
@@ -117,12 +117,8 @@ public class MainActivity extends Activity {
             }
         });
         //在这里加入一下判断，看看匹配是不是已经过期了，如果已经过期了就删除这个match，然后把这个match移动到一个备份表里
-        switch (isMatched){
-            case 0:
-                break;
-            case 1:
-                //在这里写检测时间的代码
-        }
+
+
     }
 
 
@@ -159,6 +155,7 @@ public class MainActivity extends Activity {
                         break;
                     case 1:
                         setTabSelection(5);
+
                         break;//如果匹配了就显示已经匹配的首页
                 }
 
