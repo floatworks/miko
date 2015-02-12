@@ -33,11 +33,13 @@ public class TaskDetail extends ActionBarActivity {
     private File currentImageFile = null;//照片暂存File
     private static final int REQUEST_CODE_TAKE_PICTURE = 1;//动作代码，拍照动作
     private  static final int CROP = 2;//裁剪代码动作
+    private  static  final  int SELECT= 3;//选择图片
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
         //找到各种组件
         ivTakePic = (ImageView) findViewById(R.id.iv_task_detail_take_pic);
+        ivSelectPic = (ImageView) findViewById(R.id.iv_task_detail_select_pic);
         textViewdetailTitle = (TextView) findViewById(R.id.textView_task_detail_title);
         textViewdetailDesc = (TextView) findViewById(R.id.textView_task_detail_desc);
         ivTaskBg = (ImageView) findViewById(R.id.iv_task_detail_background);
@@ -69,6 +71,7 @@ public class TaskDetail extends ActionBarActivity {
                     @Override
                     public void onLoadingComplete(String s, View view, Bitmap bitmap) {
                         ivTaskBg.setImageBitmap(bitmap);
+
                     }
 
                     @Override
@@ -104,6 +107,33 @@ public class TaskDetail extends ActionBarActivity {
 
 
                 });
+
+        //选图事件
+        ivSelectPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File dir = new File(Environment.getExternalStorageDirectory(), "pictures/softtime");//存储路径
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+                currentImageFile = new File(dir, System.currentTimeMillis()+".jpg");//路径+名称 = 存储文件具体位置
+                //文件不存在的话则新建
+                if (!currentImageFile.exists()) {
+                    try {
+                        currentImageFile.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Intent intentGet = new Intent("android.intent.action.GET_CONTENT");   //准备裁剪
+                intentGet.setType("image/*");
+                intentGet.putExtra("crop",true);
+                intentGet.putExtra("scale",true);
+                intentGet.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));//把文件转换成Uri格式然后放到Extra里，相机应用会提取这个的，拍完就保存到这里
+                startActivityForResult(intentGet,CROP);
+            }
+        });
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

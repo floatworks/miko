@@ -36,11 +36,17 @@ public class TaskAdapter extends ArrayAdapter<task> {
     public View getView(int position, View convertView, ViewGroup parent) {
         task task = getItem(position);//获得对象
         View view ;
-
+        final ViewHolder viewHolder;
         if(convertView==null){
             view=LayoutInflater.from(getContext()).inflate(resourceId,null);
+            viewHolder = new ViewHolder();
+            viewHolder.imageView= (ImageView)view.findViewById(R.id.iv_main_task_background);
+            viewHolder.title=(TextView) view.findViewById(R.id.textView_main_task_title);
+            viewHolder.desc = (TextView) view.findViewById(R.id.textView_main_task_desc);
+            view.setTag(viewHolder);
         }else {
           view =convertView;
+            viewHolder = (ViewHolder)view.getTag();
         };
         TextView title = (TextView) view.findViewById(R.id.textView_main_task_title);
         TextView desc = (TextView) view.findViewById(R.id.textView_main_task_desc);
@@ -67,7 +73,7 @@ public class TaskAdapter extends ArrayAdapter<task> {
 
             @Override
             public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                img.setImageBitmap(bitmap);
+                viewHolder.imageView.setImageBitmap(bitmap);
             }
 
             @Override
@@ -76,8 +82,14 @@ public class TaskAdapter extends ArrayAdapter<task> {
             }
         });
 
-        title.setText(task.getTaskname());
-        desc.setText(task.getDesc());
+        viewHolder.title.setText(task.getTaskname());
+        viewHolder.desc.setText(task.getDesc());
         return view;
+    }
+
+    private class ViewHolder {
+        ImageView imageView;
+        TextView title;
+        TextView desc;
     }
 }
