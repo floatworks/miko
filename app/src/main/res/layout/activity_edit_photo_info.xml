@@ -8,25 +8,33 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical">
-
+        <include layout="@layout/top_bar"></include>
         <ImageView
             android:id="@+id/iv_editPhotoinfo_previewPic"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
             android:layout_weight="1" />
 
         <EditText
+            android:padding="12dp"
             android:id="@+id/et_editPhotoinfo_inputText"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:hint="描述一下你的照片吧"
+            android:minLines="3"
+            android:gravity="top"/>
 
     </LinearLayout>
 
     <Button
         android:id="@+id/btn_editPhotoinfo_submit"
         android:layout_width="fill_parent"
-        android:layout_height="80dp"
+        android:layout_height="55dp"
         android:layout_alignParentBottom="true"
-        android:text="发布" />
+        android:text="发布"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:background="@drawable/yello_black"/>
 </RelativeLayout>

@@ -74,6 +74,7 @@ public class FragmentMainTopic extends Fragment {
                 intentToTaskDetail.putExtra("title",mtasks.get(position).getTaskname());
                 intentToTaskDetail.putExtra("desc",mtasks.get(position).getDesc());
                 intentToTaskDetail.putExtra("background",backgroundImgUrl);
+                intentToTaskDetail.putExtra("objectId",mtasks.get(position).getObjectId());
                 startActivity(intentToTaskDetail);
             }
         });

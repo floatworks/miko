@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -33,7 +34,10 @@ public class TaskDetail extends ActionBarActivity {
     private File currentImageFile = null;//照片暂存File
     private static final int REQUEST_CODE_TAKE_PICTURE = 1;//动作代码，拍照动作
     private  static final int CROP = 2;//裁剪代码动作
-    private  static  final  int SELECT= 3;//选择图片
+    private  static  final  int SELECT_AND_CROP= 3;//选择图片
+    private  static  final  int PREUPLOAD= 4;//准备上传
+    String topicObjectId;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
@@ -48,6 +52,7 @@ public class TaskDetail extends ActionBarActivity {
         String taskTitle = comeIntent.getStringExtra("title");//获取传来的任务名称
         String taskDesc = comeIntent.getStringExtra("desc");//获取传来的任务介绍
         String taskBg = comeIntent.getStringExtra("background");
+        topicObjectId = comeIntent.getStringExtra("objectId");
         textViewdetailTitle.setText(taskTitle);
         textViewdetailDesc.setText(taskDesc);//让这两个TextView显示
         //设置任务的背景图片显示
@@ -126,52 +131,65 @@ public class TaskDetail extends ActionBarActivity {
                     }
                 }
 
-                Intent intentGet = new Intent("android.intent.action.GET_CONTENT");   //准备裁剪
+                Intent intentGet = new Intent("android.intent.action.GET_CONTENT");   //选内容
                 intentGet.setType("image/*");
                 intentGet.putExtra("crop",true);
                 intentGet.putExtra("scale",true);
                 intentGet.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));//把文件转换成Uri格式然后放到Extra里，相机应用会提取这个的，拍完就保存到这里
-                startActivityForResult(intentGet,CROP);
+                startActivityForResult(intentGet,SELECT_AND_CROP);
             }
         });
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //分辨动作码
-        switch (requestCode) {
-            case REQUEST_CODE_TAKE_PICTURE://如果动作是拍照
+        if(resultCode == RESULT_CANCELED){
+            //什么也不做
+        }else {
+            switch (requestCode) {
+                case REQUEST_CODE_TAKE_PICTURE://如果动作是拍照
 
-                Intent intentCrop = new Intent("com.android.camera.action.CROP");   //准备裁剪
-                intentCrop.setDataAndType(Uri.fromFile(currentImageFile),"image/*");//裁剪程序会读取这个，表示裁剪哪个文件
-                //下面这个是设置在开启的Intent中设置显示的VIEW可缩放
-                intentCrop.putExtra("scale",true);
-                intentCrop.putExtra(MediaStore.EXTRA_OUTPUT,Uri.fromFile(currentImageFile));//裁剪后保存到哪里，这也是裁剪程序自己搞定的
-                startActivityForResult(intentCrop,CROP);
+                    Intent intentCrop = new Intent("com.android.camera.action.CROP");   //准备裁剪
+                    intentCrop.setDataAndType(Uri.fromFile(currentImageFile), "image/*");//裁剪程序会读取这个，表示裁剪哪个文件
+                    //下面这个是设置在开启的Intent中设置显示的VIEW可缩放
+                    intentCrop.putExtra("scale", true);
+                    intentCrop.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));//裁剪后保存到哪里，这也是裁剪程序自己搞定的
+                    startActivityForResult(intentCrop, CROP);
 
-                break;
+                    break;
 
-            case CROP:
-                if(resultCode ==RESULT_OK) {
+                case CROP:
+                    if (resultCode == RESULT_OK) {
 
-                    try {
-                        Bitmap bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(Uri.fromFile(currentImageFile)));//建立一张图——我该补一下这个知识了
-                        System.out.println(bitmap+"ddd");
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
+
+                        Intent intentToSubmit = new Intent(TaskDetail.this, EditPhotoInfo.class);//准备打开编辑发布页面
+                        //传入刚才拍摄照片的Uri，好像这里的Uri就是自动是已经被裁减过的了，这都是自动的貌似
+                        intentToSubmit.setData(Uri.fromFile(currentImageFile));
+                        //需要传入一下String啊，怎么办呢。这边传了那边收不到,用第三个类吧。。。
+                        Config.setTemp(currentImageFile.getAbsolutePath());
+                        intentToSubmit.putExtra("topicObjectId",topicObjectId);
+                        startActivity(intentToSubmit);
                     }
-                    //感觉上面这一段好像没什么用
-                    Intent intentToSubmit = new Intent(TaskDetail.this, EditPhotoInfo.class);//准备打开编辑发布页面
-                    //传入刚才拍摄照片的Uri，好像这里的Uri就是自动是已经被裁减过的了，这都是自动的貌似
-                    intentToSubmit.setData(Uri.fromFile(currentImageFile));
-                    //需要传入一下String啊，怎么办呢。这边传了那边收不到,用第三个类吧。。。
+
+                case SELECT_AND_CROP:
+
+                    Intent intentSelectCrop = new Intent("com.android.camera.action.CROP");   //准备裁剪
+                    intentSelectCrop.setDataAndType(data.getData(), "image/*");
+                    intentSelectCrop.putExtra("scale", true);
+                    intentSelectCrop.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));//裁剪后保存到哪里，这也是裁剪程序自己搞定的
+                    startActivityForResult(intentSelectCrop, PREUPLOAD);
+
+                    break;
+
+                case PREUPLOAD:
+                    Intent intentToPreSubmit = new Intent(TaskDetail.this, EditPhotoInfo.class);//准备打开编辑发布页面
+                    intentToPreSubmit.setData(Uri.fromFile(currentImageFile));
                     Config.setTemp(currentImageFile.getAbsolutePath());
-
-                    startActivity(intentToSubmit);
-                }
-            default:
-                break;
+                    intentToPreSubmit.putExtra("topicObjectId",topicObjectId);
+                    startActivity(intentToPreSubmit);
+                default:
+                    break;
+            }
         }
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 }
