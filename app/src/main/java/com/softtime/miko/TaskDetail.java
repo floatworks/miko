@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,10 +21,16 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.softtime.miko.Adapter.PicAdapter;
+import com.softtime.miko.BmobData.pic;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.listener.FindListener;
 
 public class TaskDetail extends ActionBarActivity {
     TextView textViewdetailTitle;
@@ -31,6 +38,8 @@ public class TaskDetail extends ActionBarActivity {
     ImageView ivTakePic ;//拍照按钮
     ImageView ivSelectPic;//选一张照片按钮
     ImageView ivTaskBg ;//总任务的背景图
+    Intent comeIntent;
+    ListView lvTopicDetail;
     private File currentImageFile = null;//照片暂存File
     private static final int REQUEST_CODE_TAKE_PICTURE = 1;//动作代码，拍照动作
     private  static final int CROP = 2;//裁剪代码动作
@@ -42,48 +51,21 @@ public class TaskDetail extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_detail);
         //找到各种组件
-        ivTakePic = (ImageView) findViewById(R.id.iv_task_detail_take_pic);
-        ivSelectPic = (ImageView) findViewById(R.id.iv_task_detail_select_pic);
-        textViewdetailTitle = (TextView) findViewById(R.id.textView_task_detail_title);
-        textViewdetailDesc = (TextView) findViewById(R.id.textView_task_detail_desc);
-        ivTaskBg = (ImageView) findViewById(R.id.iv_task_detail_background);
+        getComponent();
         //获取刚刚传过来的Intnet
-        Intent comeIntent = getIntent();
+        comeIntent = getIntent();
         String taskTitle = comeIntent.getStringExtra("title");//获取传来的任务名称
         String taskDesc = comeIntent.getStringExtra("desc");//获取传来的任务介绍
-        String taskBg = comeIntent.getStringExtra("background");
         topicObjectId = comeIntent.getStringExtra("objectId");
         textViewdetailTitle.setText(taskTitle);
         textViewdetailDesc.setText(taskDesc);//让这两个TextView显示
         //设置任务的背景图片显示
-        ImageLoaderConfiguration ilConfinguration = ImageLoaderConfiguration.createDefault(this);//创建默认配置文件
-        DisplayImageOptions options = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .build();//设置配置选项
-        ImageLoader.getInstance().init(ilConfinguration);//绑定配置文件
-        ImageLoader.getInstance().loadImage(taskBg, options, new ImageLoadingListener() {
-                    @Override
-                    public void onLoadingStarted(String s, View view) {
+        setTopicBackgroundImgDisplay();
+        //读取这个topic下的图片，先找数据（上传者的名字，图片地址，图片描述）
+        loadPicture();
 
-                    }
 
-                    @Override
-                    public void onLoadingFailed(String s, View view, FailReason failReason) {
 
-                    }
-
-                    @Override
-                    public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                        ivTaskBg.setImageBitmap(bitmap);
-
-                    }
-
-                    @Override
-                    public void onLoadingCancelled(String s, View view) {
-
-                    }
-                });
 
                 //拍照按钮的单击事件
                 ivTakePic.setOnClickListener(new View.OnClickListener() {
@@ -139,6 +121,9 @@ public class TaskDetail extends ActionBarActivity {
                 startActivityForResult(intentGet,SELECT_AND_CROP);
             }
         });
+
+
+
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -191,5 +176,62 @@ public class TaskDetail extends ActionBarActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void getComponent(){
+        ivTakePic = (ImageView) findViewById(R.id.iv_task_detail_take_pic);
+        ivSelectPic = (ImageView) findViewById(R.id.iv_task_detail_select_pic);
+        textViewdetailTitle = (TextView) findViewById(R.id.textView_task_detail_title);
+        textViewdetailDesc = (TextView) findViewById(R.id.textView_task_detail_desc);
+        ivTaskBg = (ImageView) findViewById(R.id.iv_task_detail_background);
+        lvTopicDetail = (ListView) findViewById(R.id.listView_task_detail);
+    }
+
+    private  void setTopicBackgroundImgDisplay(){
+        ImageLoaderConfiguration ilConfinguration = ImageLoaderConfiguration.createDefault(this);//创建默认配置文件
+        DisplayImageOptions options = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();//设置配置选项
+        ImageLoader.getInstance().init(ilConfinguration);//绑定配置文件
+        ImageLoader.getInstance().loadImage(comeIntent.getStringExtra("background"), options, new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String s, View view) {
+
+            }
+
+            @Override
+            public void onLoadingFailed(String s, View view, FailReason failReason) {
+
+            }
+
+            @Override
+            public void onLoadingComplete(String s, View view, Bitmap bitmap) {
+                ivTaskBg.setImageBitmap(bitmap);
+
+            }
+
+            @Override
+            public void onLoadingCancelled(String s, View view) {
+
+            }
+        });
+    }
+
+    private  void loadPicture(){
+        BmobQuery<pic> topicPic = new BmobQuery<pic>();
+        topicPic.addWhereEqualTo("topicObjectId",topicObjectId);
+        topicPic.findObjects(this,new FindListener<pic>() {
+            @Override
+            public void onSuccess(List<pic> pics) {
+                PicAdapter picAdapter = new PicAdapter(TaskDetail.this,R.layout.listview_item_main_task,pics);
+                lvTopicDetail.setAdapter(picAdapter);
+            }
+
+            @Override
+            public void onError(int i, String s) {
+                Toast.makeText(TaskDetail.this, "读取数据失败" + s, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
