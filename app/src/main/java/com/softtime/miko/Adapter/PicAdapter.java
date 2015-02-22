@@ -15,12 +15,16 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.softtime.miko.BmobData.User;
 import com.softtime.miko.BmobData.pic;
 import com.softtime.miko.BmobData.task;
 import com.softtime.miko.Config;
 import com.softtime.miko.R;
 
 import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.listener.GetListener;
 
 /**
  * Created by Administrator on 2015/1/10.
@@ -36,7 +40,11 @@ public class PicAdapter extends ArrayAdapter<pic> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         pic pic = getItem(position);//获得对象
+
+
         View view ;
+
+
         final ViewHolder viewHolder;
         if(convertView==null){
             view=LayoutInflater.from(getContext()).inflate(resourceId,null);
@@ -49,9 +57,20 @@ public class PicAdapter extends ArrayAdapter<pic> {
             view =convertView;
             viewHolder = (ViewHolder)view.getTag();
         };
-//        TextView title = (TextView) view.findViewById(R.id.textView_main_task_title);
-//        TextView desc = (TextView) view.findViewById(R.id.textView_main_task_desc);
-//        final ImageView img = (ImageView) view.findViewById(R.id.iv_main_task_background);
+        final String username;
+        BmobQuery<User> userBmobQuery = new BmobQuery<User>();
+        userBmobQuery.getObject(view.getContext(),pic.getUser(),new GetListener<User>() {
+            @Override
+            public void onSuccess(User user) {
+                viewHolder.username.setText("来自"+user.getUsername());
+            }
+
+            @Override
+            public void onFailure(int i, String s) {
+                viewHolder.username.setText("未知用户");
+            }
+        });
+
 //        //拼凑出图片地址
         String backUrl = BmobProFile.getInstance(view.getContext()).signURL(pic.getPicFilename(),pic.getPicUrl(), Config.accessKey,0,null);//URL签名获得真正的地址
 //        //设置显示用UniversualImageLoader
@@ -83,7 +102,7 @@ public class PicAdapter extends ArrayAdapter<pic> {
             }
         });
 //
-        viewHolder.username.setText(pic.getUser());
+
         viewHolder.picDesc.setText(pic.getPicDesc());
         return view;
     }

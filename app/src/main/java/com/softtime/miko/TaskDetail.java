@@ -40,6 +40,7 @@ public class TaskDetail extends ActionBarActivity {
     ImageView ivTaskBg ;//总任务的背景图
     Intent comeIntent;
     ListView lvTopicDetail;
+    TextView topbarTitle;
     private File currentImageFile = null;//照片暂存File
     private static final int REQUEST_CODE_TAKE_PICTURE = 1;//动作代码，拍照动作
     private  static final int CROP = 2;//裁剪代码动作
@@ -57,10 +58,10 @@ public class TaskDetail extends ActionBarActivity {
         String taskTitle = comeIntent.getStringExtra("title");//获取传来的任务名称
         String taskDesc = comeIntent.getStringExtra("desc");//获取传来的任务介绍
         topicObjectId = comeIntent.getStringExtra("objectId");
-        textViewdetailTitle.setText(taskTitle);
-        textViewdetailDesc.setText(taskDesc);//让这两个TextView显示
-        //设置任务的背景图片显示
-        setTopicBackgroundImgDisplay();
+        //设置标题栏
+        topbarTitle.setText(taskTitle);
+
+
         //读取这个topic下的图片，先找数据（上传者的名字，图片地址，图片描述）
         loadPicture();
 
@@ -181,10 +182,9 @@ public class TaskDetail extends ActionBarActivity {
     private void getComponent(){
         ivTakePic = (ImageView) findViewById(R.id.iv_task_detail_take_pic);
         ivSelectPic = (ImageView) findViewById(R.id.iv_task_detail_select_pic);
-        textViewdetailTitle = (TextView) findViewById(R.id.textView_task_detail_title);
-        textViewdetailDesc = (TextView) findViewById(R.id.textView_task_detail_desc);
-        ivTaskBg = (ImageView) findViewById(R.id.iv_task_detail_background);
         lvTopicDetail = (ListView) findViewById(R.id.listView_task_detail);
+        topbarTitle = (TextView) findViewById(R.id.tv_titlebar);
+
     }
 
     private  void setTopicBackgroundImgDisplay(){
